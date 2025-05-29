@@ -1,0 +1,191 @@
+[{
+    "id": "zapmedquestions",
+    "_key": "zapmedquestions",
+    "intro": {
+      "type": "INTRO",
+      "text": "Seja bem vindo ao canal do asistente virtual do Medbase Statistics.\n",
+      "jump": "option:/start"
+    },
+    "options": [
+      {
+      "text": "Gostaria de responder umas perguntas agora?\n",
+        "id": "/start",
+        "type": "OPTION",
+        "list": [
+          {
+            "id": "1",
+            "text": "Sim.\n",
+            "onSelect": {
+              "jump": "option:/main"
+            }
+          },
+          {
+            "id": "2",
+            "text": "Não.\n",
+            "onSelect": {
+              "jump": "info:/exit"
+            }
+          }
+        ]
+      },
+      {
+          "text": "Observe o conteúdo apresentado e selecione, dentre as opções abaixo, aquela que melhor descreve ou representa o que você está vendo na imagem acima.\n",
+          "id": "/imageAssessment",
+          "type": "OPTION",
+          "list": [],
+          "prepare": {
+            "content": {
+              "id": "imageAssessmentId"
+            },
+            "onSelect": {
+              "jump": "info:/exit"
+            },
+            "media": {
+              "route": "/zapmedquestions/imageAssessment",
+              "acceptedTypes": [
+                "IMAGE",
+                "VIDEO",
+                "AUDIO",
+                "GIF"
+              ]
+            }
+          }
+        },
+        {
+        "text": "Escolha uma dentre as opções listadas abaixo.\n",
+        "id": "/main",
+        "type": "OPTION",
+        "list": [
+          {
+            "id": "1",
+            "text": "Cadastrar uma pessoa.\n",
+            "comments": "Cadastrar uma pessoa.",
+            "onSelect": {
+              "jump": "form:/cadPessoa"
+            }
+          },
+          {
+            "id": "2",
+            "text": "Cadastrar um Usuário.\n",
+            "comments": "Cadastrar um Usuário.",
+            "onSelect": {
+              "jump": "form:/cadUser"
+            }
+          },
+           {
+            "id": "3",
+            "text": "Responder o questionário.\n",
+            "comments": "Responder o questionário.",
+            "onSelect": {
+              "jump": "form:/responderPergunta"
+            }
+          },
+          {
+            "id": "4",
+            "text": "Finalizar Atendimento.\n",
+            "onSelct": {
+              "jump": "page:exit"
+            }
+          }
+        ]
+      }
+    ],
+    "forms": [
+      {
+        "id": "/cadPessoa",
+        "text": "Para dar prosseguimento ao atendimento, informe os dados solicitados a seguir.\n",
+        "type": "FORM",
+        "list": [
+          {
+            "id": "name",
+            "text": "Para dar prosseguimento ao atendimento, informe o seu nome completo.\n",
+            "format": "text"
+          },
+          {
+            "id": "birthDate",
+            "text": "Para dar prosseguimento ao atendimento, informe sua data de nascimento.\n",
+            "format": "text"
+          },
+          {
+            "id": "cpf",
+            "text": "Informe o CPF.\n",
+            "format": "text"
+          }
+        ],
+        "submit": {
+          "listAtt": [
+            "name",
+            "birthDate",
+            "cpf"
+          ],
+          "route": "/zapmedquestions/cadPessoa",
+          "jump": "option:/imageAssessment"
+        }
+      },
+       {
+        "id": "/responderPergunta",
+        "text": "Qual o animal que voa?\n",
+        "type": "OPTION",
+        "list": [
+          {
+            "id": "1",
+            "text": "camelo.\n",
+            
+            "onSelect": {
+              "jump": "form:/cadPessoa"
+            }
+          },
+          {
+            "id": "2",
+            "text": "gato\n",
+            
+            "onSelect": {
+              "jump": "form:/cadUser"
+            }
+          },
+           {
+            "id": "3",
+            "text": "avestruz\n",
+            
+            "onSelect": {
+              "jump": "form:/responderPergunta"
+            }
+          },
+          {
+            "id": "4",
+            "text": "abelha.\n",
+            "onSelct": {
+              "jump": "page:exit"
+            }
+          }
+        ],
+        "submit": {
+          "listAtt": [
+            "name",
+            "birthDate",
+            "cpf"
+          ],
+          "route": "/zapmedquestions/cadPessoa",
+          "jump": "option:/imageAssessment"
+        }
+      }
+    ],
+    "info": [
+      {
+        "text": "Questionario realizado com sucesso sua taxa de acerto foi de 100%. ",
+        "id": "/exit",
+        "type": "INFO",
+        "media": {
+          "route": "/zapmedquestions/imageAssessment",
+          "acceptedTypes": [
+            "IMAGE",
+            "VIDEO",
+            "AUDIO",
+            "GIF"
+          ]
+        },
+        "exit": true
+      }
+    ]
+  }
+]

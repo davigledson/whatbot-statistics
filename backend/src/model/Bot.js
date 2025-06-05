@@ -110,7 +110,15 @@ class Bot {
     console.log("jumpResolver");
     const frame = this.page.getFrame(path);
     let text = ``;
-
+if (!frame) {
+    // Se não encontrou frame com esse id → erro de lógica (ou salto inválido)
+    contact.support.addCurrentMessage({
+      text: `*Ops!* Não encontrei a tela para: ${path}.\nTente novamente.`,
+      format: "TEXT",
+      type: "ERROR/NOSHOWOPTION"
+    });
+    return;
+  }
     if (frame.type == "INFO") {
       console.log("INFO");
       contact.support.currentFrame = new FrameInfo(frame);

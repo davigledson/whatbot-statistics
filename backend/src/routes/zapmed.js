@@ -27,7 +27,7 @@ router.put('/cadPessoa', async (req, res) => {
 
   console.log("esse é o texto",req.body)
 
-  user = await oracle.sendData("/zapmedquestions/person",req.body)        
+  user = await oracle.sendData("/zapmed/person",req.body)        
   res.send(req.body)
 /*  let {num_days, service_key} = req.body;
 
@@ -53,7 +53,7 @@ router.put('/ResponderQuestionario', async (req, res) => {
 
   console.log("esse é o texto",req.body)
 
-  user = await oracle.sendData("/zapmedquestions/person",req.body)        
+  user = await oracle.sendData("/zapmed/person",req.body)        
   res.send(req.body)
 /*  let {num_days, service_key} = req.body;
 

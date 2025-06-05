@@ -4,7 +4,8 @@ const QRCode = require("qrcode");
 const Bot = require("../model/Bot");
 const Oracle = require("../model/Oracle");
 const PoolContact = require("../model/PoolContact");
-
+const axios = require("axios");
+const PageModel = require("../model/Page");
 const poolContact = new PoolContact();
 let client; 
 let bot;
@@ -25,7 +26,7 @@ async function resetClient() {
 }
 
 router.get("/init", async (req, res) => {
-  const bot_name = "zapmedquestions";
+  const bot_name = "zapmed";
   bot = new Bot(bot_name, new Oracle(`http://localhost:${process.env.MIDDLEWARE_PORT}`));
   await bot.loadPage(bot_name);
   console.log("nome do bot:", bot_name);
@@ -156,6 +157,8 @@ router.get("/reset", async (req, res) => {
   res.send({ message: "Cliente reiniciado com sucesso." });
 });
 
+
+
 router.put("/message", async (req, res) => {
   let { text, from, name } = req.body;
 
@@ -175,4 +178,62 @@ router.put("/message", async (req, res) => {
   res.send({ from: from, text: txt });
 });
 
+//CRIADAS POR MIM
+router.get("/listBot", async (req, res) => {
+ 
+   try {
+    // Altere para o endereço correto da outra aplicação
+    const response = await axios.get("http://localhost:3000/bot_connection/ping");
+
+    if (response.status === 200) {
+      console.log(response.data)
+      return res.send(response.data) ;
+    } else {
+      return res.status(500).send({ message: "Aplicação encontrada, mas resposta inesperada." });
+    }
+  } catch (error) {
+    console.error("Erro ao conectar com a outra aplicação:", error.message);
+    return res.status(500).send({ message: "Não foi possível reconhecer a outra aplicação." });
+  }
+});
+
+
+router.get("/pull-questionnaire/:_key", async (req, res) => {
+  try {
+    const _key = req.params._key;
+    //Monta a URL exata do app que retorna o JSON do Page
+    const STATS_BASE_URL = process.env.STATS_APP_URL || "http://localhost:3000";
+    const statsEndpoint = `${STATS_BASE_URL}/bot_connection/questionnaire-page/${_key}`;
+
+    //Chama via HTTP GET para obter o JSON “Page”
+    const response = await axios.get(statsEndpoint);
+    const pageJson = response.data;
+
+    //Valida mínima: se não tiver intro ou _key, dá erro
+    if (!pageJson || !pageJson._key || !pageJson.intro) {
+      return res.status(400).json({ error: "Resposta da Stats App não é um Page válido." });
+    }
+
+    // Instancia o model Page no Bot e atribui a bot.page
+    //    Se o Bot ainda não existir ( init não foi chamado), retorna um erro
+    if (!bot) {
+      return res.status(400).json({ error: "Bot não foi inicializado. Chame /init primeiro." });
+    }
+    bot.page = new PageModel(pageJson);
+
+    // 5. Retorna o JSON ao (usuario) paciente
+    return res.json({
+      status: "ok",
+      message: `Page '${_key}' carregada com sucesso no Bot.`,
+      loadedPage: pageJson
+    });
+  } catch (error) {
+    console.error("Erro em /pull-questionnaire/:_key:", error);
+    //Se a outra retornar 404, axios.get dispara erro, então devolvemos 404
+    if (error.response && error.response.status === 404) {
+      return res.status(404).json({ error: "Questionário não encontrado na aplicação de Estatísticas." });
+    }
+    return res.status(500).json({ error: error.message });
+  }
+});
 module.exports = router;

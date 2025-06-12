@@ -24,21 +24,7 @@ Content-Type: application/json
     "property_id":"01.01.038.0024.001"
 }
 
-###
-PUT http://localhost:4006/bot/v1/message
-Content-Type: application/json
 
-{
-    "name":"Davi",
-    "typed":"text",
-    "textk":"01.01.038.0024.001",
-    "textd":"05032766429",
-    "text": "1",
-    "from": "558497041665@c.us"
-}
-
-###
-GET http://localhost:4006/bot/v1/init
 
 ###
 GET http://localhost:3000/bot/v1/test/upload
@@ -55,3 +41,25 @@ GET http://localhost:3000/bot_connection/questionnaire-page/1
 
 ###
 GET http://localhost:4006/bot/v1/pull-questionnaire/1
+
+###
+GET http://localhost:4006/bot/v1/pull-patient/1
+
+
+###
+GET http://localhost:4006/bot/v1/init
+###
+GET http://localhost:4006/bot/v1/pull-patient-questions/1
+
+###
+PUT http://localhost:4006/bot/v1/message
+Content-Type: application/json
+
+{
+    "name":"Davi",
+    "typed":"text",
+    "textk":"01.01.038.0024.001",
+    "textd":"05032766429",
+    "text": "2",
+    "from": "558497041665@c.us"
+}

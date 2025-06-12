@@ -236,4 +236,50 @@ router.get("/pull-questionnaire/:_key", async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 });
+
+
+
+
+/**
+ * Rota: puxa *as perguntas* do paciente como um Page único
+ * e injeção no bot.page.
+ */
+router.get("/pull-patient-questions/:patientKey", async (req, res) => {
+  try {
+    const patientKey = req.params.patientKey;
+    const STATS_BASE_URL = process.env.STATS_APP_URL || "http://localhost:3000";
+    // Ajuste o prefixo se registrou o router em /questionnaire
+    const statsEndpoint = `${STATS_BASE_URL}/bot_connection/patient-questions-page/${patientKey}`;
+
+    // 1) Obtém o Page das perguntas do paciente
+    const response = await axios.get(statsEndpoint);
+    const pageJson = response.data;
+
+    // 2) Validações mínimas
+    if (!pageJson || !pageJson._key || !pageJson.intro) {
+      return res.status(400).json({ error: "Stats App não retornou um Page válido." });
+    }
+
+    // 3) Garante bot inicializado
+    if (!bot) {
+      return res.status(400).json({ error: "Bot não inicializado. Chame /init primeiro." });
+    }
+
+    // 4) Injeta no bot
+    bot.page = new PageModel(pageJson);
+
+    // 5) Confirma
+    return res.json({
+      status: "ok",
+      message: `Página de perguntas do paciente '${patientKey}' carregada com sucesso.`,
+      loadedPage: pageJson
+    });
+  } catch (error) {
+    console.error("Erro em /pull-patient-questions:", error);
+    if (error.response?.status === 404) {
+      return res.status(404).json({ error: "Paciente não encontrado na Stats App." });
+    }
+    return res.status(500).json({ error: error.message });
+  }
+});
 module.exports = router;
